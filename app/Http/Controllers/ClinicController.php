@@ -70,14 +70,14 @@ class ClinicController extends Controller
                 $clinic->logomarca = $imageId;
             }
 
-            $clinic->save();
-
             if ($clinic->especialidades) {
-                $clinic->especialidades->each(function ($especialidade) {
-                    $especialidade->clinic_specialty = $especialidade->pivot->toArray();
-                    unset($especialidade->pivot);
+                $clinic->especialidades->each(function ($specialty) {
+                    $specialty->clinic_specialty = $specialty->pivot->toArray();
+                    unset($specialty->pivot);
                 });
             }
+
+            $clinic->save();
 
             return response()->json(['message' => 'Clínica cadastrada com sucesso.', 'data' => $clinic], 201);
          } catch (ValidationException $e) {
@@ -97,12 +97,12 @@ class ClinicController extends Controller
             $clinic = Clinic::with('especialidades')->findOrFail($id);
 
             if ($clinic->especialidades) {
-                $clinic->especialidades->each(function ($especialidade) {
-                    $especialidade->clinic_specialty = $especialidade->pivot->toArray();
-                    unset($especialidade->pivot);
+                $clinic->especialidades->each(function ($specialty) {
+                    $specialty->clinic_specialty = $specialty->pivot->toArray();
+                    unset($specialty->pivot);
                 });
             }
-            
+
             return response()->json($clinic);
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Clínica não encontrada.'], 404);
@@ -110,7 +110,6 @@ class ClinicController extends Controller
             return response()->json(['error' => 'Erro ao obter a clínica.'], 500);
         }
     }
-
 
     public function update(Request $request, $id)
     {

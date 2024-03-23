@@ -13,7 +13,14 @@ class SpecialistController extends Controller
     public function index()
     {
         try {
-            $specialists = Specialist::all();
+            $specialists = Specialist::with('especialidade')->get();
+            $specialists->each(function ($specialist) {
+                $specialist->especialidade->each(function ($specialty) {
+                    $specialty->specialist_specialty = $specialty->pivot->toArray();
+                    unset($specialty->pivot);
+                });
+            });
+
             return response()->json($specialists, 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Erro ao obter os especialistas.'], 500);
@@ -30,10 +37,15 @@ class SpecialistController extends Controller
                 'agenda' => 'nullable|array',
                 'disponibilidades' => 'nullable|array',
                 'foto' => 'nullable|integer',
-                'especialidade' => 'nullable|integer' 
+                'especialidade' => 'nullable|array',
+                'especialidade.*' => 'exists:specialties,id'
             ]);
 
             $specialist = Specialist::create($request->all());
+
+            $specialties = $request->has('especialidade') ? $request->input('especialidade') : [];
+
+            $specialist->especialidade()->sync($specialties);
 
             $imageId = null;
 
@@ -55,6 +67,13 @@ class SpecialistController extends Controller
                 $specialist->foto = $imageId;
             }
 
+            if ($specialist->especialidades) {
+                $specialist->especialidades->each(function ($specialty) {
+                    $specialty->specialist_specialty = $specialty->pivot->toArray();
+                    unset($specialty->pivot);
+                });
+            }
+
             $specialist->save();
             return response()->json($specialist, 201);
         } catch (ValidationException $e) {
@@ -68,7 +87,15 @@ class SpecialistController extends Controller
     public function show($id)
     {
         try {
-            $specialist = Specialist::findOrFail($id);
+            $specialist = Specialist::with('especialidade')->findOrFail($id);
+
+            if ($specialist->especialidades) {
+                $specialist->especialidade->each(function ($specialty) {
+                    $specialty->specialist_specialty = $specialty->pivot->toArray();
+                    unset($specialty->pivot);
+                });
+            }
+
             return response()->json($specialist, 200);
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Especialista não encontrado.'], 404);
