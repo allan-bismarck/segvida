@@ -15,7 +15,7 @@ class ClinicController extends Controller
     public function index()
     {
         try {
-            $clinics = Clinic::with('especialidades')->get();
+            $clinics = Clinic::with(['especialidades', 'agenda'])->get();
             $clinics->each(function ($clinic) {
                 $clinic->especialidades->each(function ($especialidade) {
                     $especialidade->clinic_specialty = $especialidade->pivot->toArray();
@@ -94,7 +94,7 @@ class ClinicController extends Controller
     public function show($id)
     {
         try {
-            $clinic = Clinic::with('especialidades')->findOrFail($id);
+            $clinic = Clinic::with(['especialidades', 'agenda'])->findOrFail($id);
 
             if ($clinic->especialidades) {
                 $clinic->especialidades->each(function ($specialty) {
@@ -128,6 +128,10 @@ class ClinicController extends Controller
 
             $clinic = Clinic::findOrFail($id);
 
+            $specialties = $request->has('especialidades') ? $request->input('especialidades') : [];
+
+            $clinic->especialidades()->sync($specialties);
+
             if ($request->hasFile('imagem')) {
 
                 $request->validate([
@@ -154,6 +158,13 @@ class ClinicController extends Controller
                     Image::destroy($clinic->logomarca);
                     $clinic->logomarca = null;
                 }
+            }
+
+            if ($clinic->especialidades) {
+                $clinic->especialidades->each(function ($specialty) {
+                    $specialty->clinic_specialty = $specialty->pivot->toArray();
+                    unset($specialty->pivot);
+                });
             }
 
             $clinic->update($request->all());

@@ -13,7 +13,7 @@ class SpecialistController extends Controller
     public function index()
     {
         try {
-            $specialists = Specialist::with('especialidade')->get();
+            $specialists = Specialist::with(['especialidade', 'agenda', 'disponibilidades'])->get();
             $specialists->each(function ($specialist) {
                 $specialist->especialidade->each(function ($specialty) {
                     $specialty->specialist_specialty = $specialty->pivot->toArray();
@@ -67,8 +67,8 @@ class SpecialistController extends Controller
                 $specialist->foto = $imageId;
             }
 
-            if ($specialist->especialidades) {
-                $specialist->especialidades->each(function ($specialty) {
+            if ($specialist->especialidade) {
+                $specialist->especialidade->each(function ($specialty) {
                     $specialty->specialist_specialty = $specialty->pivot->toArray();
                     unset($specialty->pivot);
                 });
@@ -87,7 +87,7 @@ class SpecialistController extends Controller
     public function show($id)
     {
         try {
-            $specialist = Specialist::with('especialidade')->findOrFail($id);
+            $specialist = Specialist::with(['especialidade', 'agenda', 'disponibilidades'])->findOrFail($id);
 
             if ($specialist->especialidades) {
                 $specialist->especialidade->each(function ($specialty) {
@@ -114,10 +114,15 @@ class SpecialistController extends Controller
                 'agenda' => 'nullable|array',
                 'disponibilidade' => 'nullable|array',
                 'foto' => 'nullable|integer',
-                'especialidade' => 'nullable|integer' 
+                'especialidade' => 'nullable|array',
+                'especialidade.*' => 'exists:specialties,id'
             ]);
 
             $specialist = Specialist::findOrFail($id);
+
+            $specialties = $request->has('especialidade') ? $request->input('especialidade') : [];
+
+            $specialist->especialidade()->sync($specialties);
 
             if ($request->hasFile('imagem')) {
                 $request->validate([
@@ -144,6 +149,13 @@ class SpecialistController extends Controller
                     Image::destroy($specialist->foto);
                     $specialist->foto = null;
                 }
+            }
+
+            if ($specialist->especialidade) {
+                $specialist->especialidade->each(function ($specialty) {
+                    $specialty->specialist_specialty = $specialty->pivot->toArray();
+                    unset($specialty->pivot);
+                });
             }
 
             $specialist->update($request->all());
