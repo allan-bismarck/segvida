@@ -35,9 +35,9 @@ class AvailabilityController extends Controller
     {
         try {
             $request->validate([
-                'horario_chegada' => 'required|date_format:H:i:s',
-                'horario_saida' => 'nullable|date_format:H:i:s',
-                'dia' => 'required|string|max:3',
+                'arrival_time' => 'required|date_format:H:i:s',
+                'departure_time' => 'nullable|date_format:H:i:s',
+                'day' => 'required|string|max:3',
                 'clinic_id' => 'required|integer|exists:clinics,id',
                 'specialist_id' => 'required|integer|exists:specialists,id'
             ]);
@@ -57,9 +57,9 @@ class AvailabilityController extends Controller
     {
         try {
             $request->validate([
-                'horario_chegada' => 'required|date_format:H:i:s',
-                'horario_saida' => 'nullable|date_format:H:i:s',
-                'dia' => 'required|string|max:3',
+                'arrival_time' => 'required|date_format:H:i:s',
+                'departure_time' => 'nullable|date_format:H:i:s',
+                'day' => 'required|string|max:3',
                 'clinic_id' => 'required|integer|exists:clinics,id',
                 'specialist_id' => 'required|integer|exists:specialists,id'
             ]);

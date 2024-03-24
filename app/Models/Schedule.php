@@ -10,11 +10,11 @@ class Schedule extends Model
     use HasFactory;
 
     protected $fillable = [
-        'tipo',
-        'motivo_consulta',
-        'hora_inicio',
-        'hora_fim',
-        'pagamento',
+        'type',
+        'reason_for_consultation',
+        'start_time',
+        'end_time',
+        'payment',
         'clinic_id',
         'specialist_id',
         'patient_id'

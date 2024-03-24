@@ -10,19 +10,19 @@ class Patient extends Model
     use HasFactory;
 
     protected $fillable = [
-        'Nome',
-        'data_nascimento',
-        'genero',
-        'endereco',
+        'name',
+        'date_of_birth',
+        'sex',
+        'address',
         'whatsapp',
         'email',
         'rg',
         'cpf',
         'user_name',
-        'foto'
+        'photo'
     ];
 
-    public function agenda()
+    public function schedules()
     {
         return $this->hasMany(Schedule::class);
     }

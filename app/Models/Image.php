@@ -11,23 +11,21 @@ class Image extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nome',
-        'caminho',
+        'name',
+        'path',
         'owner_id',
         'owner_type'
     ];
 
-    protected $uploadsDirectory = 'imagens';
+    protected $uploadsDirectory = 'images';
 
-    public function saveImage($imagem, $owner_id, $owner_type)
+    public function saveImage($image, $owner_id, $owner_type)
     {
 
-        print($owner_id);
-
-        $imagemName = time() . '_' . uniqid() . '.' . $imagem->getClientOriginalExtension();
-        $imagem->storeAs('public/' . $this->uploadsDirectory, $imagemName);
-        $this->nome = $imagemName;
-        $this->caminho = $this->uploadsDirectory . '/' . $imagemName;
+        $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+        $image->storeAs('public/' . $this->uploadsDirectory, $imageName);
+        $this->name = $imageName;
+        $this->path = $this->uploadsDirectory . '/' . $imageName;
         $this->owner_id = $owner_id;
         $this->owner_type = $owner_type;
         $this->save();
@@ -35,6 +33,6 @@ class Image extends Model
 
     public function getUrl()
     {
-        return Storage::url($this->caminho);
+        return Storage::url($this->path);
     }
 }

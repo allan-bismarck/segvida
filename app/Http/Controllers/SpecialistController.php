@@ -13,7 +13,7 @@ class SpecialistController extends Controller
     public function index()
     {
         try {
-            $specialists = Specialist::with(['especialidade', 'agenda', 'disponibilidades'])->get();
+            $specialists = Specialist::with(['specialty', 'schedules', 'availabilities'])->get();
             $specialists->each(function ($specialist) {
                 $specialist->especialidade->each(function ($specialty) {
                     $specialty->specialist_specialty = $specialty->pivot->toArray();
@@ -31,27 +31,25 @@ class SpecialistController extends Controller
     {
         try {
             $request->validate([
-                'nome' => 'required|string|max:255',
+                'name' => 'required|string|max:255',
                 'CRM' => 'nullable|string',
-                'genero' => 'nullable|string|in:Masculino,Feminino',
-                'agenda' => 'nullable|array',
-                'disponibilidades' => 'nullable|array',
-                'foto' => 'nullable|integer',
-                'especialidade' => 'nullable|array',
-                'especialidade.*' => 'exists:specialties,id'
+                'sex' => 'nullable|string|in:Masculino,Feminino',
+                'photo' => 'nullable|integer',
+                'specialty' => 'nullable|array',
+                'specialty.*' => 'exists:specialties,id'
             ]);
 
             $specialist = Specialist::create($request->all());
 
-            $specialties = $request->has('especialidade') ? $request->input('especialidade') : [];
+            $specialties = $request->has('specialty') ? $request->input('specialty') : [];
 
-            $specialist->especialidade()->sync($specialties);
+            $specialist->specialty()->sync($specialties);
 
             $imageId = null;
 
-            if ($request->hasFile('imagem')) {
+            if ($request->hasFile('image')) {
                 $request->validate([
-                    'imagem' => 'image|mimes:jpeg,png,jpg|max:2048', // Validação para a imagem
+                    'image' => 'image|mimes:jpeg,png,jpg|max:2048', // Validação para a imagem
                 ]);
 
                 $imageController = new ImageController();
@@ -59,16 +57,16 @@ class SpecialistController extends Controller
                 $response = $imageController->upload($request, $specialist->id, 'specialist');
 
                 if ($response->getStatusCode() == 201) {
-                    $imageId = $response->getData()->imagem->id;
+                    $imageId = $response->getData()->image->id;
                 }
             }
 
             if ($imageId != null) {
-                $specialist->foto = $imageId;
+                $specialist->photo = $imageId;
             }
 
-            if ($specialist->especialidade) {
-                $specialist->especialidade->each(function ($specialty) {
+            if ($specialist->specialty) {
+                $specialist->specialty->each(function ($specialty) {
                     $specialty->specialist_specialty = $specialty->pivot->toArray();
                     unset($specialty->pivot);
                 });
@@ -87,10 +85,10 @@ class SpecialistController extends Controller
     public function show($id)
     {
         try {
-            $specialist = Specialist::with(['especialidade', 'agenda', 'disponibilidades'])->findOrFail($id);
+            $specialist = Specialist::with(['specialty', 'schedules', 'availabilities'])->findOrFail($id);
 
-            if ($specialist->especialidades) {
-                $specialist->especialidade->each(function ($specialty) {
+            if ($specialist->specialty) {
+                $specialist->specialty->each(function ($specialty) {
                     $specialty->specialist_specialty = $specialty->pivot->toArray();
                     unset($specialty->pivot);
                 });
@@ -108,23 +106,23 @@ class SpecialistController extends Controller
     {
         try {
             $request->validate([
-                'nome' => 'required|string|max:255',
-                'CRM' => 'required|string',
-                'genero' => 'required|string|in:Masculino,Feminino',
-                'foto' => 'nullable|integer',
-                'especialidade' => 'nullable|array',
-                'especialidade.*' => 'exists:specialties,id'
+                'name' => 'required|string|max:255',
+                'CRM' => 'nullable|string',
+                'sex' => 'nullable|string|in:Masculino,Feminino',
+                'photo' => 'nullable|integer',
+                'specialty' => 'nullable|array',
+                'specialty.*' => 'exists:specialties,id'
             ]);
 
             $specialist = Specialist::findOrFail($id);
 
-            $specialties = $request->has('especialidade') ? $request->input('especialidade') : [];
+            $specialties = $request->has('specialty') ? $request->input('specialty') : [];
 
-            $specialist->especialidade()->sync($specialties);
+            $specialist->specialty()->sync($specialties);
 
-            if ($request->hasFile('imagem')) {
+            if ($request->hasFile('image')) {
                 $request->validate([
-                    'imagem' => 'image|mimes:jpeg,png,jpg|max:2048', // Validação para a imagem
+                    'image' => 'image|mimes:jpeg,png,jpg|max:2048', // Validação para a imagem
                 ]);
 
                 $imageController = new ImageController();
@@ -132,25 +130,25 @@ class SpecialistController extends Controller
                 $response = $imageController->upload($request, $specialist->id, 'specialist');
 
                 if ($response->getStatusCode() == 201) {
-                    $imageId = $response->getData()->imagem->id;
+                    $imageId = $response->getData()->image->id;
 
-                    if ($specialist->foto) {
-                        Image::destroy($specialist->foto);
+                    if ($specialist->photo) {
+                        Image::destroy($specialist->photo);
                     }
 
-                    $specialist->foto = $imageId;
+                    $specialist->photo = $imageId;
                 } else {
                     throw new \Exception('Falha ao fazer upload da imagem.');
                 }
             } else {
-                if ($specialist->foto) {
-                    Image::destroy($specialist->foto);
-                    $specialist->foto = null;
+                if ($specialist->photo) {
+                    Image::destroy($specialist->photo);
+                    $specialist->photo = null;
                 }
             }
 
-            if ($specialist->especialidade) {
-                $specialist->especialidade->each(function ($specialty) {
+            if ($specialist->specialty) {
+                $specialist->specialty->each(function ($specialty) {
                     $specialty->specialist_specialty = $specialty->pivot->toArray();
                     unset($specialty->pivot);
                 });
@@ -173,8 +171,8 @@ class SpecialistController extends Controller
         try {
             $specialist = Specialist::findOrFail($id);
 
-            if ($specialist->foto) {
-                Image::destroy($specialist->foto);
+            if ($specialist->photo) {
+                Image::destroy($specialist->photo);
             }
 
             $specialist->delete();

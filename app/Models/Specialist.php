@@ -10,23 +10,23 @@ class Specialist extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nome',
+        'name',
         'CRM',
-        'genero',
-        'foto'
+        'sex',
+        'photo'
     ];
 
-    public function especialidade()
+    public function specialty()
     {
         return $this->belongsToMany(Specialty::class, 'specialist_specialty', 'specialist_id', 'specialty_id');
     }
 
-    public function disponibilidades()
+    public function availabilities()
     {
         return $this->hasMany(Availability::class);
     }
 
-    public function agenda()
+    public function schedules()
     {
         return $this->hasMany(Schedule::class);
     }

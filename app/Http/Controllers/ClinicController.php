@@ -13,12 +13,12 @@ class ClinicController extends Controller
     public function index()
     {
         try {
-            $clinics = Clinic::with(['especialidades', 'agenda', 'disponibilidades'])->get();
+            $clinics = Clinic::with(['specialties', 'schedules', 'availabilities'])->get();
             
             $clinics->each(function ($clinic) {
-                $clinic->especialidades->each(function ($especialidade) {
-                    $especialidade->clinic_specialty = $especialidade->pivot->toArray();
-                    unset($especialidade->pivot);
+                $clinic->specialties->each(function ($specialty) {
+                    $specialty->clinic_specialty = $specialty->pivot->toArray();
+                    unset($specialty->pivot);
                 });
             });
             
@@ -33,28 +33,28 @@ class ClinicController extends Controller
     {
         try {
             $request->validate([
-                'nome' => 'required|string',
+                'name' => 'required|string',
                 'email' => 'required|email',
-                'endereco' => 'nullable|string',
+                'address' => 'nullable|string',
                 'whatsapp' => 'nullable|string',
                 'cnpj' => 'nullable|string',
-                'descricao' => 'nullable|string',
-                'logomarca' => 'nullable|integer',
-                'especialidades' => 'nullable|array',
-                'especialidades.*' => 'exists:specialties,id'
+                'description' => 'nullable|string',
+                'photo' => 'nullable|integer',
+                'specialties' => 'nullable|array',
+                'specialties.*' => 'exists:specialties,id'
             ]);
 
             $clinic = Clinic::create($request->all());
 
-            $specialties = $request->has('especialidades') ? $request->input('especialidades') : [];
+            $specialties = $request->has('specialties') ? $request->input('specialties') : [];
 
-            $clinic->especialidades()->sync($specialties);
+            $clinic->specialties()->sync($specialties);
 
             $imageId = null;
 
-            if ($request->hasFile('imagem')) {
+            if ($request->hasFile('image')) {
                 $request->validate([
-                    'imagem' => 'image|mimes:jpeg,png,jpg|max:2048', // Validação para a imagem
+                    'image' => 'image|mimes:jpeg,png,jpg|max:2048', // Validação para a imagem
                 ]);
 
                 $imageController = new ImageController();
@@ -62,16 +62,16 @@ class ClinicController extends Controller
                 $response = $imageController->upload($request, $clinic->id, 'clinic');
 
                 if ($response->getStatusCode() == 201) {
-                    $imageId = $response->getData()->imagem->id;
+                    $imageId = $response->getData()->image->id;
                 }
             }
 
             if ($imageId != null) {
-                $clinic->logomarca = $imageId;
+                $clinic->photo = $imageId;
             }
 
-            if ($clinic->especialidades) {
-                $clinic->especialidades->each(function ($specialty) {
+            if ($clinic->specialties) {
+                $clinic->specialties->each(function ($specialty) {
                     $specialty->clinic_specialty = $specialty->pivot->toArray();
                     unset($specialty->pivot);
                 });
@@ -93,10 +93,10 @@ class ClinicController extends Controller
     public function show($id)
     {
         try {
-            $clinic = Clinic::with(['especialidades', 'agenda', 'disponibilidades'])->findOrFail($id);
+            $clinic = Clinic::with(['specialties', 'schedules', 'availabilities'])->findOrFail($id);
 
-            if ($clinic->especialidades) {
-                $clinic->especialidades->each(function ($specialty) {
+            if ($clinic->specialties) {
+                $clinic->specialties->each(function ($specialty) {
                     $specialty->clinic_specialty = $specialty->pivot->toArray();
                     unset($specialty->pivot);
                 });
@@ -114,27 +114,27 @@ class ClinicController extends Controller
     {
         try {
             $request->validate([
-                'nome' => 'string',
-                'email' => 'email',
-                'endereco' => 'nullable|string',
+                'name' => 'required|string',
+                'email' => 'required|email',
+                'address' => 'nullable|string',
                 'whatsapp' => 'nullable|string',
                 'cnpj' => 'nullable|string',
-                'descricao' => 'nullable|string',
-                'logomarca' => 'nullable|integer',
-                'especialidades' => 'nullable|array',
-                'especialidades.*' => 'exists:specialties,id'
+                'description' => 'nullable|string',
+                'photo' => 'nullable|integer',
+                'specialties' => 'nullable|array',
+                'specialties.*' => 'exists:specialties,id'
             ]);
 
             $clinic = Clinic::findOrFail($id);
 
-            $specialties = $request->has('especialidades') ? $request->input('especialidades') : [];
+            $specialties = $request->has('specialties') ? $request->input('specialties') : [];
 
-            $clinic->especialidades()->sync($specialties);
+            $clinic->specialties()->sync($specialties);
 
-            if ($request->hasFile('imagem')) {
+            if ($request->hasFile('image')) {
 
                 $request->validate([
-                    'imagem' => 'image|mimes:jpeg,png,jpg|max:2048', // Validação para a imagem
+                    'image' => 'image|mimes:jpeg,png,jpg|max:2048', // Validação para a imagem
                 ]);
 
                 $imageController = new ImageController();
@@ -142,25 +142,25 @@ class ClinicController extends Controller
                 $response = $imageController->upload($request, $clinic->id, 'clinic');
 
                 if ($response->getStatusCode() == 201) {
-                    $imageId = $response->getData()->imagem->id;
+                    $imageId = $response->getData()->image->id;
 
-                    if ($clinic->logomarca) {
-                        Image::destroy($clinic->logomarca);
+                    if ($clinic->photo) {
+                        Image::destroy($clinic->photo);
                     }
 
-                    $clinic->logomarca = $imageId;
+                    $clinic->photo = $imageId;
                 } else {
                     throw new \Exception('Falha ao fazer upload da imagem.');
                 }
             } else {
-                if ($clinic->logomarca) {
-                    Image::destroy($clinic->logomarca);
-                    $clinic->logomarca = null;
+                if ($clinic->photo) {
+                    Image::destroy($clinic->photo);
+                    $clinic->photo = null;
                 }
             }
 
-            if ($clinic->especialidades) {
-                $clinic->especialidades->each(function ($specialty) {
+            if ($clinic->specialties) {
+                $clinic->specialties->each(function ($specialty) {
                     $specialty->clinic_specialty = $specialty->pivot->toArray();
                     unset($specialty->pivot);
                 });
@@ -180,8 +180,8 @@ class ClinicController extends Controller
         try {
             $clinic = Clinic::findOrFail($id);
 
-            if ($clinic->logomarca) {
-                Image::destroy($clinic->logomarca);
+            if ($clinic->photo) {
+                Image::destroy($clinic->photo);
             }
 
             $clinic->delete();

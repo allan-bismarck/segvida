@@ -36,18 +36,18 @@ class SpecialtyController extends Controller
     {
         try {
             $request->validate([
-                'nome' => 'required|string|max:255',
-                'cor' => 'nullable|string|max:255',
-                'icone' => 'nullable|integer',
+                'name' => 'required|string|max:255',
+                'color' => 'nullable|string|max:255',
+                'photo' => 'nullable|integer',
             ]);
 
             $specialty = Specialty::create($request->all());
 
             $imageId = null;
 
-            if ($request->hasFile('imagem')) {
+            if ($request->hasFile('image')) {
                 $request->validate([
-                    'imagem' => 'image|mimes:jpeg,png,jpg|max:2048', // Validação para a imagem
+                    'image' => 'image|mimes:jpeg,png,jpg|max:2048', // Validação para a imagem
                 ]);
 
                 $imageController = new ImageController();
@@ -60,7 +60,7 @@ class SpecialtyController extends Controller
             }
 
             if ($imageId != null) {
-                $specialty->icone = $imageId;
+                $specialty->photo = $imageId;
             }
 
             $specialty->save();
@@ -77,17 +77,17 @@ class SpecialtyController extends Controller
     {
         try {
             $request->validate([
-                'nome' => 'required|string|max:255',
-                'cor' => 'nullable|string|max:255',
-                'icone' => 'nullable|integer',
+                'name' => 'required|string|max:255',
+                'color' => 'nullable|string|max:255',
+                'photo' => 'nullable|integer',
             ]);
 
             $specialty = Specialty::findOrFail($id);
 
-            if ($request->hasFile('imagem')) {
+            if ($request->hasFile('image')) {
 
                 $request->validate([
-                    'imagem' => 'image|mimes:jpeg,png,jpg|max:2048', // Validação para a imagem
+                    'image' => 'image|mimes:jpeg,png,jpg|max:2048', // Validação para a imagem
                 ]);
 
                 $imageController = new ImageController();
@@ -95,20 +95,20 @@ class SpecialtyController extends Controller
                 $response = $imageController->upload($request, $specialty->id, 'specialty');
 
                 if ($response->getStatusCode() == 201) {
-                    $imageId = $response->getData()->imagem->id;
+                    $imageId = $response->getData()->image->id;
 
-                    if ($specialty->icone) {
-                        Image::destroy($specialty->icone);
+                    if ($specialty->photo) {
+                        Image::destroy($specialty->photo);
                     }
 
-                    $specialty->icone = $imageId;
+                    $specialty->photo = $imageId;
                 } else {
                     throw new \Exception('Falha ao fazer upload da imagem.');
                 }
             } else {
-                if ($specialty->icone) {
-                    Image::destroy($specialty->icone);
-                    $specialty->icone = null;
+                if ($specialty->photo) {
+                    Image::destroy($specialty->photo);
+                    $specialty->photo = null;
                 }
             }
 
@@ -130,8 +130,8 @@ class SpecialtyController extends Controller
         try {
             $specialty = Specialty::findOrFail($id);
 
-            if ($specialty->icone) {
-                Image::destroy($specialty->icone);
+            if ($specialty->photo) {
+                Image::destroy($specialty->photo);
             }
 
             $specialty->delete();

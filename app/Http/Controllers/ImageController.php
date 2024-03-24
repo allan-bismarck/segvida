@@ -24,18 +24,18 @@ class ImageController extends Controller
     {
         try {
             $request->validate([
-                'imagem' => 'required|image|mimes:jpeg,jpg,png|max:2048', // JPEG ou PNG, máximo de 2MB
+                'image' => 'required|image|mimes:jpeg,jpg,png|max:2048', // JPEG ou PNG, máximo de 2MB
             ], [
-                'imagem.required' => 'O campo de imagem é obrigatório.',
-                'imagem.image' => 'O arquivo deve ser uma imagem.',
-                'imagem.mimes' => 'A imagem deve ser do tipo: jpeg, png.',
-                'imagem.max' => 'O tamanho máximo da imagem é de 2MB.'
+                'image.required' => 'O campo de imagem é obrigatório.',
+                'image.image' => 'O arquivo deve ser uma imagem.',
+                'image.mimes' => 'A imagem deve ser do tipo: jpeg, png.',
+                'image.max' => 'O tamanho máximo da imagem é de 2MB.'
             ]);
 
             $image = new Image();
-            $image->saveImage($request->file('imagem'), $owner_id, $owner_type);
+            $image->saveImage($request->file('image'), $owner_id, $owner_type);
 
-            return response()->json(['message' => 'Imagem carregada com sucesso.', 'imagem' => $image], 201);
+            return response()->json(['message' => 'Imagem carregada com sucesso.', 'image' => $image], 201);
         } catch (\Exception $e) {
             print('Erro ao carregar imagem: ' . $e->getMessage());
             return response()->json(['error' => 'Erro ao carregar a imagem.'], 500);
@@ -57,7 +57,7 @@ class ImageController extends Controller
         try {
             $image = Image::findOrFail($id);
     
-            $path = storage_path('app/public/' . $image->caminho);
+            $path = storage_path('app/public/' . $image->path);
 
             $contentType = mime_content_type($path);
     

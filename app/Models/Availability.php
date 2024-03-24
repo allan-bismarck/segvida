@@ -10,9 +10,9 @@ class Availability extends Model
     use HasFactory;
 
     protected $fillable = [
-        'horario_chegada',
-        'horario_saida',
-        'dia',
+        'arrival_time',
+        'departure_time',
+        'day',
         'clinic_id',
         'specialist_id'
     ];

@@ -13,7 +13,7 @@ class PatientController extends Controller
     public function index()
     {
         try {
-            $patients = Patient::with('agenda')->get();
+            $patients = Patient::with('schedules')->get();
             return response()->json($patients);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Erro ao obter os pacientes.'], 500);
@@ -23,7 +23,7 @@ class PatientController extends Controller
     public function show($id)
     {
         try {
-            $patient = Patient::with('agenda')->findOrFail($id);
+            $patient = Patient::with('schedules')->findOrFail($id);
             return response()->json($patient);
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Paciente não encontrado.'], 404);
@@ -36,26 +36,25 @@ class PatientController extends Controller
     {
         try {
             $request->validate([
-                'Nome' => 'required|string|max:255',
-                'data_nascimento' => 'nullable|date',
-                'genero' => 'nullable|string|in:Masculino,Feminino',
-                'endereco' => 'nullable|string|max:255',
+                'name' => 'required|string|max:255',
+                'date_of_birth' => 'nullable|date',
+                'sex' => 'nullable|string|in:Masculino,Feminino',
+                'address' => 'nullable|string|max:255',
                 'whatsapp' => 'nullable|string|max:255',
                 'email' => 'required|email|max:255',
                 'rg' => 'nullable|string|max:255',
                 'cpf' => 'nullable|string|max:255',
                 'user_name' => 'required|string|max:255',
-                'foto' => 'nullable|integer',
-                'agenda' => 'nullable|array',
+                'photo' => 'nullable|integer',
             ]);
 
             $patient = Patient::create($request->all());
 
             $imageId = null;
 
-            if ($request->hasFile('imagem')) {
+            if ($request->hasFile('image')) {
                 $request->validate([
-                    'imagem' => 'image|mimes:jpeg,png,jpg|max:2048', // Validação para a imagem
+                    'image' => 'image|mimes:jpeg,png,jpg|max:2048', // Validação para a imagem
                 ]);
 
                 $imageController = new ImageController();
@@ -63,12 +62,12 @@ class PatientController extends Controller
                 $response = $imageController->upload($request, $patient->id, 'patient');
 
                 if ($response->getStatusCode() == 201) {
-                    $imageId = $response->getData()->imagem->id;
+                    $imageId = $response->getData()->image->id;
                 }
             }
 
             if ($imageId != null) {
-                $patient->foto = $imageId;
+                $patient->photo = $imageId;
             }
 
             $patient->save();
@@ -86,24 +85,24 @@ class PatientController extends Controller
     {
         try {
             $request->validate([
-                'Nome' => 'required|string|max:255',
-                'data_nascimento' => 'nullable|date',
-                'genero' => 'nullable|string|in:Masculino,Feminino',
-                'endereco' => 'nullable|string|max:255',
+                'name' => 'required|string|max:255',
+                'date_of_birth' => 'nullable|date',
+                'sex' => 'nullable|string|in:Masculino,Feminino',
+                'address' => 'nullable|string|max:255',
                 'whatsapp' => 'nullable|string|max:255',
                 'email' => 'required|email|max:255',
                 'rg' => 'nullable|string|max:255',
                 'cpf' => 'nullable|string|max:255',
                 'user_name' => 'required|string|max:255',
-                'foto' => 'nullable|integer'
+                'photo' => 'nullable|integer',
             ]);
 
             $patient = Patient::findOrFail($id);
 
-            if ($request->hasFile('imagem')) {
+            if ($request->hasFile('image')) {
 
                 $request->validate([
-                    'imagem' => 'image|mimes:jpeg,png,jpg|max:2048', // Validação para a imagem
+                    'image' => 'image|mimes:jpeg,png,jpg|max:2048', // Validação para a imagem
                 ]);
 
                 $imageController = new ImageController();
@@ -111,20 +110,20 @@ class PatientController extends Controller
                 $response = $imageController->upload($request, $patient->id, 'patient');
 
                 if ($response->getStatusCode() == 201) {
-                    $imageId = $response->getData()->imagem->id;
+                    $imageId = $response->getData()->image->id;
 
-                    if ($patient->foto) {
-                        Image::destroy($patient->foto);
+                    if ($patient->photo) {
+                        Image::destroy($patient->photo);
                     }
 
-                    $patient->foto = $imageId;
+                    $patient->photo = $imageId;
                 } else {
                     throw new \Exception('Falha ao fazer upload da imagem.');
                 }
             } else {
-                if ($patient->foto) {
-                    Image::destroy($patient->foto);
-                    $patient->foto = null;
+                if ($patient->photo) {
+                    Image::destroy($patient->photo);
+                    $patient->photo = null;
                 }
             }
 
@@ -146,8 +145,8 @@ class PatientController extends Controller
         try {
             $patient = Patient::findOrFail($id);
 
-            if ($patient->foto) {
-                Image::destroy($patient->foto);
+            if ($patient->photo) {
+                Image::destroy($patient->photo);
             }
 
             $patient->delete();

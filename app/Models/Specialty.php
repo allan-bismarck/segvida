@@ -10,17 +10,17 @@ class Specialty extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nome',
-        'cor',
-        'icone'
+        'name',
+        'color',
+        'photo'
     ];
 
-    public function clinicas()
+    public function clinics()
     {
         return $this->belongsToMany(Clinic::class);
     }
 
-    public function especialistas()
+    public function specialists()
     {
         return $this->belongsToMany(Specialist::class);
     }

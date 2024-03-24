@@ -23,11 +23,11 @@ class ScheduleController extends Controller
     {
         try {
             $request->validate([
-                'tipo' => 'required|string|in:Online,Presencial',
-                'motivo_consulta' => 'nullable|string',
-                'hora_inicio' => 'required|date_format:Y-m-d\TH:i',
-                'hora_fim' => 'required|date_format:Y-m-d\TH:i|after:hora_inicio',
-                'pagamento' => 'required|string|in:Particular,Convênio',
+                'type' => 'required|string|in:Online,Presencial',
+                'reason_for_consultation' => 'nullable|string',
+                'start_time' => 'required|date_format:Y-m-d\TH:i',
+                'end_time' => 'required|date_format:Y-m-d\TH:i|after:hora_inicio',
+                'payment' => 'required|string|in:Particular,Convênio',
                 'clinic_id' => 'required|integer|exists:clinics,id',
                 'specialist_id' => 'required|integer|exists:specialists,id',
                 'patient_id' => 'required|integer|exists:patients,id',
@@ -60,11 +60,11 @@ class ScheduleController extends Controller
     {
         try {
             $request->validate([
-                'tipo' => 'required|string|in:Online,Presencial',
-                'motivo_consulta' => 'nullable|string',
-                'hora_inicio' => 'required|date_format:Y-m-d\TH:i',
-                'hora_fim' => 'required|date_format:Y-m-d\TH:i|after:hora_inicio',
-                'pagamento' => 'required|string|in:Particular,Convênio',
+                'type' => 'required|string|in:Online,Presencial',
+                'reason_for_consultation' => 'nullable|string',
+                'start_time' => 'required|date_format:Y-m-d\TH:i',
+                'end_time' => 'required|date_format:Y-m-d\TH:i|after:hora_inicio',
+                'payment' => 'required|string|in:Particular,Convênio',
                 'clinic_id' => 'required|integer|exists:clinics,id',
                 'specialist_id' => 'required|integer|exists:specialists,id',
                 'patient_id' => 'required|integer|exists:patients,id',

@@ -10,30 +10,30 @@ class Clinic extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nome',
-        'endereco',
+        'name',
+        'address',
         'whatsapp',
         'cnpj',
         'email',
-        'descricao',
-        'logomarca'
+        'description',
+        'photo'
     ];
 
     protected $casts = [
-        'horario_funcionamento' => 'array'
+        'opening_hours' => 'array'
     ];
 
-    public function especialidades()
+    public function specialties()
     {
         return $this->belongsToMany(Specialty::class, 'clinic_specialty', 'clinic_id', 'specialty_id');
     }
 
-    public function agenda()
+    public function schedules()
     {
         return $this->hasMany(Schedule::class);
     }
 
-    public function disponibilidades()
+    public function availabilities()
     {
         return $this->hasMany(Availability::class);
     }
