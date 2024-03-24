@@ -15,7 +15,7 @@ class SpecialistController extends Controller
         try {
             $specialists = Specialist::with(['specialty', 'schedules', 'availabilities'])->get();
             $specialists->each(function ($specialist) {
-                $specialist->especialidade->each(function ($specialty) {
+                $specialist->specialty->each(function ($specialty) {
                     $specialty->specialist_specialty = $specialty->pivot->toArray();
                     unset($specialty->pivot);
                 });

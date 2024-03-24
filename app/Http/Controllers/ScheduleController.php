@@ -26,7 +26,7 @@ class ScheduleController extends Controller
                 'type' => 'required|string|in:Online,Presencial',
                 'reason_for_consultation' => 'nullable|string',
                 'start_time' => 'required|date_format:Y-m-d\TH:i',
-                'end_time' => 'required|date_format:Y-m-d\TH:i|after:hora_inicio',
+                'end_time' => 'required|date_format:Y-m-d\TH:i|after:start_time',
                 'payment' => 'required|string|in:Particular,Convênio',
                 'clinic_id' => 'required|integer|exists:clinics,id',
                 'specialist_id' => 'required|integer|exists:specialists,id',
@@ -58,12 +58,13 @@ class ScheduleController extends Controller
 
     public function update(Request $request, $id)
     {
+
         try {
             $request->validate([
                 'type' => 'required|string|in:Online,Presencial',
                 'reason_for_consultation' => 'nullable|string',
                 'start_time' => 'required|date_format:Y-m-d\TH:i',
-                'end_time' => 'required|date_format:Y-m-d\TH:i|after:hora_inicio',
+                'end_time' => 'required|date_format:Y-m-d\TH:i|after:start_time',
                 'payment' => 'required|string|in:Particular,Convênio',
                 'clinic_id' => 'required|integer|exists:clinics,id',
                 'specialist_id' => 'required|integer|exists:specialists,id',
@@ -75,6 +76,7 @@ class ScheduleController extends Controller
 
             return response()->json(['message' => 'Agenda atualizada com sucesso', 'data' => $schedule]);
         } catch (ValidationException $e) {
+            print($e);
             return response()->json(['error' => $e->errors()], 422);
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Agenda não encontrada'], 404);

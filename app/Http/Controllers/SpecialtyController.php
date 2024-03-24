@@ -55,7 +55,7 @@ class SpecialtyController extends Controller
                 $response = $imageController->upload($request, $specialty->id, 'specialty');
 
                 if ($response->getStatusCode() == 201) {
-                    $imageId = $response->getData()->imagem->id;
+                    $imageId = $response->getData()->image->id;
                 }
             }
 
