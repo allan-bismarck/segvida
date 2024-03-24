@@ -7,15 +7,14 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use App\Models\Image;
-use Illuminate\Support\Facades\Storage;
-use App\Models\Specialty;
 
 class ClinicController extends Controller
 {
     public function index()
     {
         try {
-            $clinics = Clinic::with(['especialidades', 'agenda'])->get();
+            $clinics = Clinic::with(['especialidades', 'agenda', 'disponibilidades'])->get();
+            
             $clinics->each(function ($clinic) {
                 $clinic->especialidades->each(function ($especialidade) {
                     $especialidade->clinic_specialty = $especialidade->pivot->toArray();
@@ -25,7 +24,8 @@ class ClinicController extends Controller
             
             return response()->json($clinics);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Erro ao obter as clínicas.'], 500);
+            $errorMessage = explode("\n", $e->getMessage())[0];
+            return response()->json(['error' => 'Erro ao obter as clínicas.', 'message' => $errorMessage], 500);
         }
     }
 
@@ -85,7 +85,6 @@ class ClinicController extends Controller
             $errorTitle = reset($errorMessage);
             return response()->json(['error' => 'Falha ao cadastrar clínica.', 'message' => $errorTitle], 422);
         } catch (\Exception $e) {
-            print($e);
             $errorMessage = explode("\n", $e->getMessage())[0];
             return response()->json(['error' => 'Falha ao cadastrar clínica.', 'message' => $$errorMessage], 500);
         }
@@ -94,7 +93,7 @@ class ClinicController extends Controller
     public function show($id)
     {
         try {
-            $clinic = Clinic::with(['especialidades', 'agenda'])->findOrFail($id);
+            $clinic = Clinic::with(['especialidades', 'agenda', 'disponibilidades'])->findOrFail($id);
 
             if ($clinic->especialidades) {
                 $clinic->especialidades->each(function ($specialty) {

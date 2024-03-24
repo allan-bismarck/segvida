@@ -13,15 +13,17 @@ class Availability extends Model
         'horario_chegada',
         'horario_saida',
         'dia',
+        'clinic_id',
+        'specialist_id'
     ];
 
-    public function clinica()
+    public function clinic()
     {
-        return $this->belongsTo(Clinic::class, 'clinica');
+        return $this->belongsTo(Clinic::class);
     }
 
-    public function especialista()
+    public function specialist()
     {
-        return $this->belongsTo(Specialist::class, 'especialista');
+        return $this->belongsTo(Specialist::class);
     }
 }

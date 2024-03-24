@@ -32,4 +32,9 @@ class Clinic extends Model
     {
         return $this->hasMany(Schedule::class);
     }
+
+    public function disponibilidades()
+    {
+        return $this->hasMany(Availability::class);
+    }
 }

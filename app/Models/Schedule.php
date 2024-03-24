@@ -15,9 +15,7 @@ class Schedule extends Model
         'hora_inicio',
         'hora_fim',
         'pagamento',
-        'clinica',
-        'especialista',
-        'paciente',
+
     ];
 
     protected $casts = [
@@ -25,17 +23,17 @@ class Schedule extends Model
         'hora_fim' => 'datetime',
     ];
 
-    public function clinica()
+    public function clinic()
     {
         return $this->belongsTo(Clinic::class);
     }
 
-    public function especialista()
+    public function specialist()
     {
         return $this->belongsTo(Specialist::class);
     }
 
-    public function paciente()
+    public function patient()
     {
         return $this->belongsTo(Patient::class);
     }
