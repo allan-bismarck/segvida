@@ -111,8 +111,6 @@ class SpecialistController extends Controller
                 'nome' => 'required|string|max:255',
                 'CRM' => 'required|string',
                 'genero' => 'required|string|in:Masculino,Feminino',
-                'agenda' => 'nullable|array',
-                'disponibilidade' => 'nullable|array',
                 'foto' => 'nullable|integer',
                 'especialidade' => 'nullable|array',
                 'especialidade.*' => 'exists:specialties,id'
@@ -159,7 +157,7 @@ class SpecialistController extends Controller
             }
 
             $specialist->update($request->all());
-            return response()->json($specialist, 200);
+            return response()->json(['message' => 'Especialista atualizado com sucesso.', 'data' => $specialist], 200);
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Especialista não encontrado.'], 404);
         } catch (ValidationException $e) {

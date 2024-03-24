@@ -15,12 +15,9 @@ class Schedule extends Model
         'hora_inicio',
         'hora_fim',
         'pagamento',
-
-    ];
-
-    protected $casts = [
-        'hora_inicio' => 'datetime',
-        'hora_fim' => 'datetime',
+        'clinic_id',
+        'specialist_id',
+        'patient_id'
     ];
 
     public function clinic()

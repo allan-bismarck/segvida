@@ -13,7 +13,7 @@ class PatientController extends Controller
     public function index()
     {
         try {
-            $patients = Patient::all();
+            $patients = Patient::with('agenda')->get();
             return response()->json($patients);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Erro ao obter os pacientes.'], 500);
@@ -23,7 +23,7 @@ class PatientController extends Controller
     public function show($id)
     {
         try {
-            $patient = Patient::findOrFail($id);
+            $patient = Patient::with('agenda')->findOrFail($id);
             return response()->json($patient);
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Paciente não encontrado.'], 404);
@@ -95,8 +95,7 @@ class PatientController extends Controller
                 'rg' => 'nullable|string|max:255',
                 'cpf' => 'nullable|string|max:255',
                 'user_name' => 'required|string|max:255',
-                'foto' => 'nullable|integer',
-                'agenda' => 'nullable|array',
+                'foto' => 'nullable|integer'
             ]);
 
             $patient = Patient::findOrFail($id);

@@ -19,7 +19,7 @@ Route::middleware('api')->group(function () {
         Route::get('/', [ClinicController::class, 'index']);
         Route::post('/', [ClinicController::class, 'store']);
         Route::get('/{id}', [ClinicController::class, 'show']);
-        Route::post('/{id}?_method=PUT', [ClinicController::class, 'update']);
+        Route::post('/{id}', [ClinicController::class, 'update']);
         Route::delete('/{id}', [ClinicController::class, 'destroy']);
     });
 
@@ -27,7 +27,7 @@ Route::middleware('api')->group(function () {
         Route::get('/', [SpecialistController::class, 'index']);
         Route::post('/', [SpecialistController::class, 'store']);
         Route::get('/{id}', [SpecialistController::class, 'show']);
-        Route::post('/{id}?_method=PUT', [SpecialistController::class, 'update']);
+        Route::post('/{id}', [SpecialistController::class, 'update']);
         Route::delete('/{id}', [SpecialistController::class, 'destroy']);
     });
 
@@ -35,7 +35,7 @@ Route::middleware('api')->group(function () {
         Route::get('/', [SpecialtyController::class, 'index']);
         Route::post('/', [SpecialtyController::class, 'store']);
         Route::get('/{id}', [SpecialtyController::class, 'show']);
-        Route::post('/{id}?_method=PUT', [SpecialtyController::class, 'update']);
+        Route::post('/{id}', [SpecialtyController::class, 'update']);
         Route::delete('/{id}', [SpecialtyController::class, 'destroy']);
     });
 
@@ -43,7 +43,7 @@ Route::middleware('api')->group(function () {
         Route::get('/', [PatientController::class, 'index']);
         Route::post('/', [PatientController::class, 'store']);
         Route::get('/{id}', [PatientController::class, 'show']);
-        Route::post('/{id}?_method=PUT', [PatientController::class, 'update']);
+        Route::post('/{id}', [PatientController::class, 'update']);
         Route::delete('/{id}', [PatientController::class, 'destroy']);
     });
 
