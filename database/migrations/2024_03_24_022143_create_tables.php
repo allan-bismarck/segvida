@@ -23,8 +23,8 @@ return new class extends Migration
 
         Schema::create('images', function (Blueprint $table) {
             $table->id();
-            $table->string('nome');
-            $table->string('caminho');
+            $table->string('name');
+            $table->string('path');
             $table->integer('owner_id')->nullable();
             $table->string('owner_type');
             $table->timestamps();
@@ -32,46 +32,46 @@ return new class extends Migration
 
         Schema::create('clinics', function (Blueprint $table) {
             $table->id();
-            $table->string('nome');
-            $table->string('endereco')->nullable();
+            $table->string('name');
+            $table->string('address')->nullable();
             $table->string('whatsapp')->nullable();
             $table->string('cnpj')->unique()->nullable();
-            $table->string('email');
-            $table->text('descricao')->nullable();
-            $table->json('horario_funcionamento')->nullable();
-            $table->integer('logomarca')->nullable();
+            $table->string('email')->unique();
+            $table->text('description')->nullable();
+            $table->json('opening_hours')->nullable();
+            $table->integer('photo')->nullable();
             $table->timestamps();
         });
 
         Schema::create('specialists', function (Blueprint $table) {
             $table->id();
-            $table->string('nome');
+            $table->string('name');
             $table->string('CRM')->unique()->nullable();
-            $table->string('genero')->nullable();
-            $table->integer('foto')->nullable();
+            $table->string('sex')->nullable();
+            $table->integer('photo')->nullable();
             $table->timestamps();
         });
 
         Schema::create('specialties', function (Blueprint $table) {
             $table->id();
-            $table->string('nome');
-            $table->string('cor')->nullable();
-            $table->integer('icone')->nullable();
+            $table->string('name');
+            $table->string('color')->nullable();
+            $table->integer('photo')->nullable();
             $table->timestamps();
         });
 
         Schema::create('patients', function (Blueprint $table) {
             $table->id();
-            $table->string('Nome');
-            $table->date('data_nascimento')->nullable();
-            $table->string('genero')->nullable();
-            $table->string('endereco')->nullable();
+            $table->string('name');
+            $table->date('date_of_birth')->nullable();
+            $table->string('sex')->nullable();
+            $table->string('address')->nullable();
             $table->string('whatsapp')->nullable();
             $table->string('email')->unique();
             $table->string('rg')->unique()->nullable();
             $table->string('cpf')->unique()->nullable();
             $table->string('user_name')->unique();
-            $table->integer('foto')->nullable();
+            $table->integer('photo')->nullable();
             $table->timestamps();
         });
 
@@ -83,11 +83,11 @@ return new class extends Migration
 
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
-            $table->string('tipo');
-            $table->string('motivo_consulta');
-            $table->timestamp('hora_inicio');
-            $table->timestamp('hora_fim')->nullable();
-            $table->string('pagamento');
+            $table->string('type');
+            $table->string('reason_for_consultation');
+            $table->timestamp('start_time');
+            $table->timestamp('end_time')->nullable();
+            $table->string('payment');
             $table->foreignId('clinic_id')->constrained()->onDelete('cascade');
             $table->foreignId('specialist_id')->constrained()->onDelete('cascade');
             $table->foreignId('patient_id')->constrained()->onDelete('cascade');
@@ -96,9 +96,9 @@ return new class extends Migration
 
         Schema::create('availabilities', function (Blueprint $table) {
             $table->id();
-            $table->time('horario_chegada');
-            $table->time('horario_saida')->nullable();
-            $table->string('dia');
+            $table->time('arrival_time');
+            $table->time('departure_time')->nullable();
+            $table->string('day');
             $table->foreignId('clinic_id')->constrained()->onDelete('cascade');
             $table->foreignId('specialist_id')->constrained()->onDelete('cascade');
             $table->timestamps();
