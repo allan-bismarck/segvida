@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClinicController;
@@ -9,6 +10,8 @@ use App\Http\Controllers\ImageController;
 use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\UserController;
+use App\Http\Middleware\JwtMiddleware;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -69,5 +72,17 @@ Route::middleware('api')->group(function () {
         Route::post('/upload', [ImageController::class, 'upload']);
         Route::get('/{id}/image', [ImageController::class, 'showImage']);
         Route::delete('/{id}', [ImageController::class, 'destroy']);
+    });
+
+    Route::prefix('/auth')->group(function () {
+        Route::post('/login', [AuthController::class, 'login']);
+        Route::get('/logout', [AuthController::class, 'logout']);
+    });
+
+    Route::prefix('/users')->group(function () {
+        Route::post('/register', [UserController::class, 'store']);
+        Route::get('/{id}', [UserController::class, 'show'])->middleware(JwtMiddleware::class);
+        Route::put('/{id}', [UserController::class, 'update'])->middleware(JwtMiddleware::class);
+        Route::delete('/{id}', [UserController::class, 'destroy'])->middleware(JwtMiddleware::class);
     });
 });
