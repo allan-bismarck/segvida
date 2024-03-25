@@ -24,7 +24,9 @@ class ImageController extends Controller
     {
         try {
             $request->validate([
-                'image' => 'required|image|mimes:jpeg,jpg,png|max:2048', // JPEG ou PNG, máximo de 2MB
+                'image' => 'required|image|mimes:jpeg,jpg,png|max:2048',
+                'owner_id' => 'integer',
+                'owner_type' => 'string'
             ], [
                 'image.required' => 'O campo de imagem é obrigatório.',
                 'image.image' => 'O arquivo deve ser uma imagem.',
